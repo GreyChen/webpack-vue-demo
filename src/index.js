@@ -1,22 +1,32 @@
 import _ from 'lodash'
-import './style.css'
-import photo from './my_photo.jpg'
+import printMe from './print.js'
+import './styles.css'
+
 
 function component() {
-  var element = document.createElement('div');
-
-  // Lodash（目前通过一个 script 脚本引入）对于执行这一行是必需的
-  element.innerHTML = _.join(['Hello', 'webpack', '你好'], ' ');
-
-  //新增类名
-  element.classList.add('hello')
-
-  // 将图像添加到我们现有的 div。
-  var myPhoto = new Image(); 
-  myPhoto.src = photo;
-  element.appendChild(myPhoto);
-
+  var element = document.createElement('div')
+  var btn = document.createElement('button')
+  element.innerHTML = _.join(['Hello', 'webpack'], ' ')
+  btn.innerHTML = 'Click me and check the console!'
+  btn.onclick = printMe
+  
+  element.appendChild(btn)
   return element;
 }
 
-document.body.appendChild(component());
+// document.body.appendChild(component());
+let element = component() //当print.js改变导致页面重新渲染时，重新获取渲染的元素
+document.body.appendChild(element)
+
+
+if(module.hot) {
+
+  module.hot.accept('./print.js', function() {
+    console.log('Accepting the updated printMe module!')
+    // printMe()
+    document.body.removeChild(element); 
+    element = component(); // 重新渲染页面后，component 更新 click 事件处理
+    
+    document.body.appendChild(element);
+  })
+}
